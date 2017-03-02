@@ -1,12 +1,9 @@
 <?php
 /**
- * User: Balazs
+ * Created by Balazs
  * Date: 01/03/17
  * Time: 15:14
  */
- 
- 
- //CLASS LIB FILE .. under construction
 
 class ethereum
 {
@@ -21,7 +18,7 @@ class ethereum
         $this->port = $port;
     }
 
-    function curl_data($method, $parameters="", $state =null){
+    function curl_data($method, $parameters="", $state =null, $boolean=null){
 
         if(!empty($state)) {
             //prepare state
@@ -38,8 +35,17 @@ class ethereum
             }
 
         }
+        if(!empty($boolean)) {
+            if ($boolean) {
+                $insert = ",true";
+            } else {
+                $insert = ", false";
+            }
+        } else {
+            $insert = "";
+        }
 
-        $data = '{"jsonrpc":"2.0","method":"'.$method.'","params":["'.$parameters.'"],"id":'.$this->id.'}';
+        $data = '{"jsonrpc":"2.0","method":"'.$method.'","params":["'.$parameters.'"'.$insert.'],"id":'.$this->id.'}';
         $ch = curl_init($this->url.":".$this->port);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
@@ -286,15 +292,13 @@ class ethereum
 
     function eth_getBlockByHash($block_hash, $detailed="true"){
         $method = "eth_getBlockByHash";
-        $params = $block_hash.'", "'.$detailed;
-        $resp = $this->curl_data($method, $params);
+        $resp = $this->curl_data($method, $block_hash, null, $detailed);
         return $resp->result;
     }
 
     function eth_getBlockByNumber($block_number, $detailed="true"){
         $method = "eth_getBlockByNumber";
-        $params = $block_number.'", "'.$detailed;
-        $resp = $this->curl_data($method, $params);
+        $resp = $this->curl_data($method, $block_number, null, $detailed);
         return $resp->result;
     }
 
@@ -310,23 +314,73 @@ class ethereum
         return $resp->result;
     }
 
-    function eth_getCompilers(){
-        $method = "eth_getCompilers";
+    function eth_submitWork($nonce, $pow_hash, $mix_dig){
+        $method = "eth_submitWork";
+        $param = $nonce.'", "'.$pow_hash.'", "'.$mix_dig;
+        $resp = $this->curl_data($method, $param);
+        return $resp->result;
+    }
+
+    function eth_submitHashrate($hash_rate, $ID_string){
+        $method = "eth_submitHashrate";
+        $param = $hash_rate.'", "'.$ID_string;
+        $resp = $this->curl_data($method,$param);
+        return $resp->result;
+    }
+    function db_putString($DB_name, $key_name, $data){
+        $method = "db_putString";
+        $param = $DB_name.'", "'.$key_name.'", "'.$data;
+        $resp = $this->curl_data($method, $param);
+        return $resp->result;
+    }
+    function db_getString($DB_name, $key_name){
+        $method = "db_getString";
+        $param = $DB_name.'", "'.$key_name;
+        $resp = $this->curl_data($method, $param);
+        return $resp->result;
+    }
+    function db_putHex($DB_name, $key_name, $hex){
+        $method = "db_putHex";
+        $param = $DB_name.'", "'.$key_name.'", "'.$hex;
+        $resp = $this->curl_data($method,$param);
+        return $resp->result;
+    }
+
+    function db_getHex($DB_name, $key_name){
+        $method = "db_getHex";
+        $param = $DB_name.'", "'.$key_name;
         $resp = $this->curl_data($method);
-        return hexdec($resp->result);
+        return $resp->result;
+    }
+
+    function shh_version(){
+        $method = "shh_version";
+        $resp = $this->curl_data($method);
+        return $resp->result;
+    }
+
+    function shh_newIdentity(){
+        $method = "shh_newIdentity";
+        $resp = $this->curl_data($method);
+        return $resp->result;
+    }
+
+    function shh_hasIdentity($new_ID_address){
+        $method = "shh_hasIdentity";
+        $resp = $this->curl_data($method, $new_ID_address);
+        return $resp->result;
     }
 
 
 
 
 /*
- * for GETBLOCK
+ * NOTE for GETBLOCK
 if(is_numeric($block)) {
 $parameter = $block;
 } else {
     $parameter = "'pending'";
 }
-//IN PROGRESS...
 
     ADMIN
         setSolc
@@ -353,7 +407,10 @@ $parameter = $block;
     eth_sendRawTransaction
     eth_call
     eth_estimateGas
-
+    eth_getTransactionByBlockHashAndIndex
+    eth_getTransactionByBlockNumberAndIndex
+    eth_getUncleByBlockHashAndIndex
+    eth_getUncleByBlockNumberAndIndex
     eth_compileLLL
     eth_compileSolidity
     eth_compileSerpent
@@ -365,16 +422,7 @@ $parameter = $block;
     eth_getFilterLogs
     eth_getLogs
     eth_getWork
-    eth_submitWork
-    eth_submitHashrate
-    db_putString
-    db_getString
-    db_putHex
-    db_getHex
     shh_post
-    shh_version
-    shh_newIdentity
-    shh_hasIdentity
     shh_newGroup
     shh_addToGroup
     shh_newFilter
