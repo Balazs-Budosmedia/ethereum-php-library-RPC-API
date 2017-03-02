@@ -1,7 +1,6 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: balazs
+ * Created by balazs
  * Date: 01/03/17
  * Time: 15:14
  */
@@ -138,17 +137,65 @@ echo '<pre>';
 //$code = $eth->eth_getCode($acc[2]);
 //var_dump($code);
 
-$blockbyhash = $eth->eth_getBlockByHash($hash);
-var_dump($blockbyhash);
+//$blockbyhash = $eth->eth_getBlockByHash($hash);
+//var_dump($blockbyhash);
 
-$blockbynum = $eth->eth_getBlockByNumber($block);
-var_dump($blockbynum);
+//$blockbynum = $eth->eth_getBlockByNumber($block);
+//var_dump($blockbynum);
 
-$trx_byhash = $eth->eth_getTransactionByHash($trx_hash);
-var_dump($trx_byhash);
+//$trx_byhash = $eth->eth_getTransactionByHash($trx_hash);
+//var_dump($trx_byhash);
 
-$trx_byrec = $eth->eth_getTransactionReceipt($trx_hash);
-var_dump($trx_byrec);
+//$trx_byrec = $eth->eth_getTransactionReceipt($trx_hash);
+//var_dump($trx_byrec);
 
-$compliers = $eth->eth_getCompilers();
-var_dump($compliers);
+//$compliers = $eth->eth_getCompilers();
+//var_dump($compliers);
+
+
+//$nonce="0x0000000000000001";
+//$pow_hash = "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
+//$digest = "0xD1FE5700000000000000000000000000D1FE5700000000000000000000000000";
+
+//$submit_work = $eth->eth_submitWork($nonce,$pow_hash, $digest);
+//var_dump($submit_work);
+
+
+//$hash_rate = "0x500000";
+//$ID = "0x59daa26581d0acd1fce254fb7e85952f4c09d0915afd33d3886cd914bc7d283c";
+//$submit_hash_rate = $eth->eth_submitHashrate($hash_rate, $ID);
+//var_dump($submit_hash_rate);
+
+
+// TODO Following items [db_] & [shh_] not tesetd yet
+/*
+$DB_name = "TEST_DB";
+$DB_Key = "Key";
+$data = "random_data";
+$put_str = $eth->db_putString($DB_name, $DB_Key, $data);
+var_dump($put_str);
+
+$get_str = $eth->db_getString($DB_name, $DB_Key);
+var_dump($get_str);
+
+
+$DB_Key2 = "Key";
+$hex = "0x68656c6c6f20776f726c64";
+$put_hex = $eth->db_putHex($DB_name, $DB_Key2, $hex);
+var_dump($put_hex);
+
+$get_hex = $eth->db_getHex($DB_name, $DB_Key2);
+var_dump($get_hex);
+
+$shh_ver = $eth->shh_version();
+var_dump($shh_ver);
+*/
+
+//TODO 2: Write test for these as well
+//shh_newIdentity(){
+//shh_hasIdentity($new_ID_address){
+
+
+
+
+
