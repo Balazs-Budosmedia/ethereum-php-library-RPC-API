@@ -12,6 +12,15 @@ class ethereum
     var $id = 0;
     var $debug=true;
 
+    function eth_to_wei($eth){
+        return $eth * 1000000000000000000;
+    }
+    function wei_to_eth($eth){
+        return $eth / 1000000000000000000;
+    }
+
+
+
     function __construct($url, $port){
         //TODO VALIDIATE / CHECK IS IT LIVE
         $this->url = $url;
@@ -45,7 +54,11 @@ class ethereum
             $insert = "";
         }
 
-        $data = '{"jsonrpc":"2.0","method":"'.$method.'","params":["'.$parameters.'"'.$insert.'],"id":'.$this->id.'}';
+        if(!empty($parameters) AND substr($parameters,0,1)=="{") {
+            $data = '{"jsonrpc":"2.0","method":"'.$method.'","params":['.$parameters.'],"id":'.$this->id.'}';
+        } else {
+            $data = '{"jsonrpc":"2.0","method":"' . $method . '","params":["' . $parameters . '"' . $insert . '],"id":' . $this->id . '}';
+        }
         $ch = curl_init($this->url.":".$this->port);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
@@ -327,18 +340,21 @@ class ethereum
         $resp = $this->curl_data($method,$param);
         return $resp->result;
     }
+
     function db_putString($DB_name, $key_name, $data){
         $method = "db_putString";
         $param = $DB_name.'", "'.$key_name.'", "'.$data;
         $resp = $this->curl_data($method, $param);
         return $resp->result;
     }
+
     function db_getString($DB_name, $key_name){
         $method = "db_getString";
         $param = $DB_name.'", "'.$key_name;
         $resp = $this->curl_data($method, $param);
         return $resp->result;
     }
+
     function db_putHex($DB_name, $key_name, $hex){
         $method = "db_putHex";
         $param = $DB_name.'", "'.$key_name.'", "'.$hex;
@@ -371,11 +387,61 @@ class ethereum
         return $resp->result;
     }
 
+    function eth_sendTransaction($from, $to, $value,  $gas="", $data_hex="", $gasPrice=""){
+        $method = "eth_sendTransaction";
+
+        $params = '{"from":"'.$from.'", "to":"'.$to.'", "value":"0x'.dechex($value).'"';
+        if(!empty($data_hex)) {
+            $params .=', "data":"'.$data_hex.'"';
+        }
+        if(!empty($gas)) {
+            $params .=', "gas":"0x'.dechex($gas).'"';
+        }
+        if(!empty($gasPrice)) {
+            $params .=', "gasPrice":"'.$gasPrice.'"';
+        }
+
+
+        $params .= '}';
+        $resp = $this->curl_data($method, $params);
+
+        if(isset($resp->result)){
+            return $resp->result;
+        } else {
+            return $resp->error;
+        }
+    }
+
+    function eth_estimateGas($from, $to, $value,  $gas="", $data_hex="", $gasPrice=""){
+        $method = "eth_estimateGas";
+
+        $params = '{"from":"'.$from.'", "to":"'.$to.'", "value":"0x'.dechex($value).'"';
+        if(!empty($data_hex)) {
+            $params .=', "data":"'.$data_hex.'"';
+        }
+        if(!empty($gas)) {
+            $params .=', "gas":"0x'.dechex($gas).'"';
+        }
+        if(!empty($gasPrice)) {
+            $params .=', "gasPrice":"'.$gasPrice.'"';
+        }
+
+
+        $params .= '}';
+        $resp = $this->curl_data($method, $params);
+
+        if(isset($resp->result)){
+            return hexdec($resp->result);
+        } else {
+            return $resp->error;
+        }
+
+    }
 
 
 
 /*
- * NOTE for GETBLOCK
+ * for GETBLOCK
 if(is_numeric($block)) {
 $parameter = $block;
 } else {
@@ -403,10 +469,8 @@ $parameter = $block;
     web3_sha3
     eth_getStorageAt
     eth_sign
-    eth_sendTransaction
     eth_sendRawTransaction
     eth_call
-    eth_estimateGas
     eth_getTransactionByBlockHashAndIndex
     eth_getTransactionByBlockNumberAndIndex
     eth_getUncleByBlockHashAndIndex
