@@ -1,6 +1,6 @@
 <?php
 /**
- * Created by balazs
+ * Created by Balazs
  * Date: 01/03/17
  * Time: 15:14
  */
@@ -196,6 +196,23 @@ var_dump($shh_ver);
 //shh_hasIdentity($new_ID_address){
 
 
+// ------------- SENDING TRANSACTION ---------------- //
 
+//check balance
+$balance = $eth->eth_getBalance($acc[0]);
+echo "Balance: ".$eth->wei_to_eth($balance)." for account ".$acc[4];
 
+//unlock account
+$unlock_acc = $eth->personal_unlockAccount($acc[0],"asdasd");
 
+//calculate gas
+$gas_est = $eth->eth_estimateGas($acc[0],$acc[1], $eth->eth_to_wei(0.01));
+var_dump($gas_est);
+
+//send transaction
+$trx = $eth->eth_sendTransaction($acc[0],$acc[1], $eth->eth_to_wei(0.01),$gas_est);
+var_dump($trx);
+
+//check the TX Pool, is it in there....
+$tx_content =  $eth->txpool_content();
+var_dump($tx_content);
