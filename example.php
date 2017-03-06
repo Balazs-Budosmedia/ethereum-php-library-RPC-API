@@ -5,8 +5,23 @@
  * Time: 15:14
  */
 ini_set('display_errors',1);
+
+// in my dev setup it's functions.php
 require_once('functions.php');
 
+// on Live its ethereum.php!
+// require_once('ethereum.php');
+
+
+// Feel free to use your own string to hex converters
+function hex2str( $hex ) {
+    return pack('H*', $hex);
+}
+
+function str2hex( $str ) {
+    $unpacked = unpack('H*', $str);
+    return array_shift($unpacked);
+}
 
 /*
 Accounts:
@@ -196,8 +211,8 @@ var_dump($shh_ver);
 //shh_hasIdentity($new_ID_address){
 
 
-// ------------- SENDING TRANSACTION ---------------- //
-
+// ------------- SENDING TRANSACTION ---------------- // <- all working & tested but just gently!
+/*
 //check balance
 $balance = $eth->eth_getBalance($acc[0]);
 echo "Balance: ".$eth->wei_to_eth($balance)." for account ".$acc[4];
@@ -216,3 +231,22 @@ var_dump($trx);
 //check the TX Pool, is it in there....
 $tx_content =  $eth->txpool_content();
 var_dump($tx_content);
+
+*/
+// --------------------------------------------------- //
+
+//$work = $eth->eth_getWork();
+//var_dump($work);
+
+//$data = str2hex("some random string");
+//$sha3 = $eth->web3_sha3($data);
+//var_dump($sha3);
+
+
+// TODO: TTL AND PRIORITY returns  "invalid character 'x' after object key:value pair" ERROR - FIX LATER!!!
+//$topics = "[\"0x".str2hex("hello world")."\"]";
+//$payload = "0x".str2hex("hello world");
+//$shh_post = $eth->shh_post($topics, $payload, 100,100);
+//var_dump($shh_post);
+
+
