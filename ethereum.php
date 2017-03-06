@@ -12,14 +12,6 @@ class ethereum
     var $id = 0;
     var $debug=true;
 
-    function eth_to_wei($eth){
-        return $eth * 1000000000000000000;
-    }
-    function wei_to_eth($eth){
-        return $eth / 1000000000000000000;
-    }
-
-
 
     function __construct($url, $port){
         //TODO VALIDIATE / CHECK IS IT LIVE
@@ -27,6 +19,17 @@ class ethereum
         $this->port = $port;
     }
 
+
+    //Supplimental functions
+    function eth_to_wei($eth){
+        return $eth * 1000000000000000000;
+    }
+
+    function wei_to_eth($eth){
+        return $eth / 1000000000000000000;
+    }
+
+    //ETH Functions - RPC API
     function curl_data($method, $parameters="", $state =null, $boolean=null){
 
         if(!empty($state)) {
@@ -438,16 +441,43 @@ class ethereum
 
     }
 
+    function eth_getWork(){
+        $method = "eth_getWork";
+        $resp = $this->curl_data($method);
+        return $resp->result;
+    }
 
+    function web3_sha3($data_to_SHA3){
+        $method = "web3_sha3";
+        $resp = $this->curl_data($method, "0x".$data_to_SHA3);
+        return $resp->result;
+    }
+
+    function shh_post($topics, $payload, $ttl=null, $priority=null, $from="", $to=""){
+        $method = "shh_post";
+        $params = '{"topics": '.$topics.', "payload":"'.$payload.'"';
+
+        // TODO FIX Priority and TTL!!!!
+        //, "priority": 0x'.dechex($priority);//. "ttl":0x'.dechex($ttl);//.', "priority": 0x'.dechex($priority).'';
+
+        if(!empty($from)) {
+            $params .=', "from":"'.$from.'"';
+        }
+        if(!empty($to)) {
+            $params .=', "to":"0x'.$to.'"';
+        }
+
+        $params .= '}';
+        $resp = $this->curl_data($method, $params);
+
+        if(isset($resp->result)){
+            return $resp->result;
+        } else {
+            return $resp->error;
+        }
+    }
 
 /*
- * for GETBLOCK
-if(is_numeric($block)) {
-$parameter = $block;
-} else {
-    $parameter = "'pending'";
-}
-
     ADMIN
         setSolc
         startRPC
@@ -466,7 +496,6 @@ $parameter = $block;
         setExtra
         setGasPrice
 
-    web3_sha3
     eth_getStorageAt
     eth_sign
     eth_sendRawTransaction
@@ -485,8 +514,6 @@ $parameter = $block;
     eth_getFilterChanges
     eth_getFilterLogs
     eth_getLogs
-    eth_getWork
-    shh_post
     shh_newGroup
     shh_addToGroup
     shh_newFilter
